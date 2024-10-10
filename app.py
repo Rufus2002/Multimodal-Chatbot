@@ -40,7 +40,7 @@ st.header("Multimodal Conversational Chatbot")
 # Dropdown to select mode (Text or Image)
 input_mode = st.selectbox("Select Input Mode", ["Text", "Image","Joke","HR Manager","Stock Researcher","Scientist"])
 
-if input_mode == "Text" or "Joke" or "HR Manager" or "Stock Manager" or "Scientist":
+if input_mode in ["Text", "Joke", "HR Manager", "Stock Manager", "Scientist"]:
     # Text Input Mode
     user_query = st.text_input(label="", help="Ask here", placeholder="What do you want to ask?")
     
