@@ -38,7 +38,7 @@ def converse_with_model(query):
 st.header("Multimodal Conversational Chatbot")
 
 # Dropdown to select mode (Text or Image)
-input_mode = st.selectbox("Select Input Mode", ["Text", "Image","Joke","HR Manager","Stock Researcher","Scientist"])
+input_mode = st.selectbox("Select Input Mode", ["Text", "Image"])
 role_selection=st.selectbox("Select Role",["Joker","HR Manager","Stock Researcher","Scientist","Teacher"])
 
 if input_mode== "Text" :
