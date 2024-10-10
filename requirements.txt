@@ -4,5 +4,5 @@ transformers==4.30.2
 torch  # Let the installer choose the most compatible version
 streamlit==1.24.0
 groq
-Pillow # Add the latest compatible version
+Pillow  # or Pillow==8.4.0 if issues persist
 tokenizers==0.13.3
