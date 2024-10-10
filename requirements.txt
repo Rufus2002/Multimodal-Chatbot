@@ -5,6 +5,7 @@ chromadb
 pillow
 torch
 transformers
+PIL
 langchain
 groq
 panel
