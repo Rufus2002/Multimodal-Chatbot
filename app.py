@@ -28,7 +28,7 @@ def converse_with_model(query):
         model="llama3-8b-8192",
         messages=[
             {"role": "system", "content": "You are a friendly assistant. Answer the user's question."},
-            {"role": "user", "content": f"{query}"}
+            {"role":role_selection, "content": f"{query}"}
         ]
     )
     content = chat_completion.choices[0].message.content
@@ -39,8 +39,9 @@ st.header("Multimodal Conversational Chatbot")
 
 # Dropdown to select mode (Text or Image)
 input_mode = st.selectbox("Select Input Mode", ["Text", "Image","Joke","HR Manager","Stock Researcher","Scientist"])
+role_selection=st.selectbox("Select Role",["Joker","HR Manager","Stock Researcher","Scientist","Teacher"])
 
-if input_mode in ["Text", "Joke", "HR Manager", "Stock Manager", "Scientist"]:
+if input_mode== "Text" :
     # Text Input Mode
     user_query = st.text_input(label="", help="Ask here", placeholder="What do you want to ask?")
     
