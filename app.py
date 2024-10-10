@@ -27,8 +27,8 @@ def converse_with_model(query):
     chat_completion = client.chat.completions.create(
         model="llama3-8b-8192",
         messages=[
-            {"role": "system", "content": "You are a friendly assistant. Answer the user's question."},
-            {"role":role_selection, "content": f"{query}"}
+            {"role": "system", "content": f"You are a {role_selection}. Answer the user's question."},
+            {"role":"user", "content": f"{query}"}
         ]
     )
     content = chat_completion.choices[0].message.content
