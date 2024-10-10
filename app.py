@@ -1,43 +1,58 @@
 import streamlit as st
+import requests
 from transformers import LlamaForCausalLM, LlamaTokenizer
 
-# Initialize Llama model and tokenizer
-model_name = "llama-13b"  # Change this to the LLaMA model you are using
-tokenizer = LlamaTokenizer.from_pretrained(model_name)
-model = LlamaForCausalLM.from_pretrained(model_name)
+# Load the Llama model and tokenizer
+tokenizer = LlamaTokenizer.from_pretrained("huggingface/llama-7b")
+model = LlamaForCausalLM.from_pretrained("huggingface/llama-7b")
 
-# Define chatbot roles
-roles = {
-    "assistant": "You are a helpful assistant.",
-    "mentor": "You are a knowledgeable mentor guiding the user.",
-    "friend": "You are a friendly and supportive companion.",
-    "customer_support": "You are a professional customer support representative."
-}
+# Define the Groq API URL and the API key
+GROQ_API_URL = "https://api.groq.com/v1/generate"  # Replace with your Groq API endpoint
+GROQ_API_KEY = "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"  # Replace with your actual Groq API key
 
-# Chatbot function using LLaMA model
-def generate_response(user_input, role):
-    prompt = f"{roles[role]} {user_input}"
-    inputs = tokenizer(prompt, return_tensors="pt")
-    
-    # Generate response using the LLaMA model
-    outputs = model.generate(**inputs, max_length=100)
+# Function to get response from Groq API
+def get_groq_response(prompt):
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "prompt": prompt,
+        "max_tokens": 150
+    }
+    response = requests.post(GROQ_API_URL, headers=headers, json=data)
+    response_data = response.json()
+    return response_data.get("text", "Sorry, I could not generate a response.")
+
+# Function to get response from Llama model
+def get_llama_response(user_input):
+    inputs = tokenizer(user_input, return_tensors="pt")
+    outputs = model.generate(**inputs, max_length=150)
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
     return response
 
 # Streamlit UI
-st.title("Multimodal Chatbot with LLaMA")
+st.title("Multimodal Chatbot")
+st.write("Select a role and ask your question:")
 
-# Dropdown to select role
-selected_role = st.selectbox("Select Chatbot Role", options=list(roles.keys()), format_func=lambda x: roles[x])
+# Dropdown for selecting chatbot role
+roles = ["General", "Tech Support", "AI Assistant"]
+selected_role = st.selectbox("Choose a role for the chatbot:", roles)
 
-# Text area to input the user's message
-user_input = st.text_area("Enter your message:")
-
-# Button to send the message
-if st.button("Send"):
+user_input = st.text_input("Your question:")
+if st.button("Submit"):
     if user_input:
-        response = generate_response(user_input, selected_role)
-        st.write(f"**Chatbot ({selected_role}):** {response}")
+        st.write(f"You: {user_input}")
+
+        # Combine the role with user input
+        prompt = f"As a {selected_role} role, {user_input}"
+
+        # Get responses from both APIs
+        groq_response = get_groq_response(prompt)
+        llama_response = get_llama_response(prompt)
+
+        # Display the responses
+        st.write(f"Groq Response: {groq_response}")
+        st.write(f"Llama Response: {llama_response}")
     else:
-        st.write("Please enter a message.")
+        st.write("Please enter a question.")
