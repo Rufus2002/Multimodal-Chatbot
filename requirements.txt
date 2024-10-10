@@ -10,3 +10,4 @@ groq
 panel
 protobuf==3.20.3
 pysqlite3-binary
+sqlite3==3.35.0
