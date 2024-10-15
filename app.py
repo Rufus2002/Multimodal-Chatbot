@@ -7,10 +7,10 @@ from transformers import CLIPProcessor, CLIPModel
 import groq
 from groq import Groq
 
-# Initialize Groq client (ensure to replace with your API key)
-client = Groq(api_key=("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"))
+# Initialize Groq client 
+client = Groq(api_key=("Paste your API Key here"))
 
-#%% Image Model (for handling image inputs)
+#%% Image Model 
 clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
@@ -21,7 +21,7 @@ def process_image(image):
     probs = logits_per_image.softmax(dim=1)
     return probs
 
-#%% Conversational Model (for text-based queries)
+#%% Conversational Model 
 def converse_with_model(query):
     """Converse with the Llama model using Groq's API."""
     chat_completion = client.chat.completions.create(
