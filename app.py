@@ -16,12 +16,16 @@ clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 def process_image(image):
-    """Process image using CLIP model."""
-    inputs = clip_processor(images=image, return_tensors="pt")
-    outputs = clip_model(**inputs)
-    logits_per_image = outputs.logits_per_image
-    probs = logits_per_image.softmax(dim=1)
-    return probs
+    """Process the image using CLIP to generate probabilities."""
+    try:
+        # Process the image through CLIP processor
+        inputs = clip_processor(images=image, text=[""], return_tensors="pt", padding=True)
+        outputs = clip_model(**inputs)
+        logits_per_image = outputs.logits_per_image
+        probs = logits_per_image.softmax(dim=1)
+        return probs
+    except Exception as e:
+        raise RuntimeError(f"Error in processing image: {e}")
 
 def converse_with_model(query, role):
     """Converse with the Llama model using Groq's API."""
