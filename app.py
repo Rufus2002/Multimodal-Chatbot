@@ -8,7 +8,7 @@ import groq
 from groq import Groq
 
 # Initialize Groq client 
-client = Groq(api_key=("Paste your API Key here"))
+client = Groq(api_key=("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"))
 
 #%% Image Model 
 clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
