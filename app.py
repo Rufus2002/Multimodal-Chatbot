@@ -2,31 +2,28 @@ import os
 import streamlit as st
 from PIL import Image
 import io
-import torch
-from transformers import CLIPProcessor, CLIPModel
+from transformers import BlipProcessor, BlipForConditionalGeneration
 import groq
 from groq import Groq
 
 # Initialize Groq client
 client = Groq(api_key=("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"))
 
-#%% Initialize Models
-# Load CLIP Model
-clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+#%% Initialize Captioning Model (BLIP)
+captioning_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+captioning_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 
-def process_image(image):
-    """Process the image using CLIP to generate probabilities."""
+def describe_image(image):
+    """Generate a description for the uploaded image."""
     try:
-        # Process the image through CLIP processor
-        inputs = clip_processor(images=image, text=[""], return_tensors="pt", padding=True)
-        outputs = clip_model(**inputs)
-        logits_per_image = outputs.logits_per_image
-        probs = logits_per_image.softmax(dim=1)
-        return probs
+        inputs = captioning_processor(images=image, return_tensors="pt")
+        outputs = captioning_model.generate(**inputs)
+        caption = captioning_processor.decode(outputs[0], skip_special_tokens=True)
+        return caption
     except Exception as e:
-        raise RuntimeError(f"Error in processing image: {e}")
+        raise RuntimeError(f"Error in describing image: {e}")
 
+#%% Conversational Model
 def converse_with_model(query, role):
     """Converse with the Llama model using Groq's API."""
     try:
@@ -72,12 +69,11 @@ elif input_mode == "Image":
             image = Image.open(io.BytesIO(uploaded_image.read()))
             st.image(image, caption="Uploaded Image", use_column_width=True)
 
-            # Process image and display probabilities
-            probabilities = process_image(image)
-            st.header("Image Analysis")
-            st.write("Image Analysis Probabilities:", probabilities)
+            # Generate a description for the image
+            description = describe_image(image)
+            st.header("Image Description")
+            st.write(description)
         except Exception as e:
             st.error(f"Error processing image: {e}")
 
 st.write("Switch between Text and Image modes to interact with the chatbot.")
-
